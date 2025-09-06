@@ -1,19 +1,23 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'maven-3.9.6'
+        jdk 'jdk-21'
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/Vigneshwar-Raipally/Test-Automation-SwagLabs.git'
             }
         }
-
         stage('Build & Test') {
             steps {
-                sh 'mvn clean test -DsuiteXmlFile=src/test/resources/testng.xml'
+                // Use bat for Windows
+                bat 'mvn clean test -DsuiteXmlFile=src/test/resources/testng.xml'
             }
         }
-
         stage('Publish Cucumber Report') {
             steps {
                 publishHTML(target: [
@@ -24,7 +28,6 @@ pipeline {
                 ])
             }
         }
-
         stage('Publish Extent Report') {
             steps {
                 publishHTML(target: [
@@ -36,7 +39,6 @@ pipeline {
             }
         }
     }
-
     post {
         always {
             archiveArtifacts artifacts: 'reports/screenshots/*', fingerprint: true
