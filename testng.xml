@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="SwagLabs Automation Suite" verbose="1" parallel="false">
+
+    <listeners>
+        <listener class-name="saucedemo.utils.ExtentReport_Manager"/>
+    </listeners>
+
+    <test name="Functional Tests">
+        <classes>
+            <class name="testcases.LoginTest"/>
+            <class name="testcases.ProductsTest"/>
+            <class name="testcases.CartTest"/>
+            <class name="testcases.CheckoutTest"/>
+        </classes>
+    </test>
+
+    <test name="BDD-Cucumber">
+        <classes>
+            <class name="runners.TestRunner"/>
+        </classes>
+    </test>
+
+</suite>
