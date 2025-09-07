@@ -7,13 +7,25 @@ import pages.LoginPage;
 import utils.DriverFactory;
 
 public class LoginSteps {
+
     private WebDriver driver;
     private LoginPage loginPage;
 
-    @Given("User is on the SauceDemo login page")
-    public void user_is_on_login_page() {
+    // Default browser for single login scenario
+    @Given("User opens the SauceDemo login page")
+    public void user_opens_login_page() {
+        DriverFactory.setBrowser("chrome"); // default browser
         driver = DriverFactory.getDriver();
-        driver.get("https://www.saucedemo.com/");
+        DriverFactory.openUrl("https://www.saucedemo.com/");
+        loginPage = new LoginPage(driver);
+    }
+
+    // Multi-browser scenario
+    @Given("User opens the SauceDemo login page on browser {string}")
+    public void user_opens_login_page_on_browser(String browser) {
+        DriverFactory.setBrowser(browser);
+        driver = DriverFactory.getDriver();
+        DriverFactory.openUrl("https://www.saucedemo.com/");
         loginPage = new LoginPage(driver);
     }
 
@@ -26,7 +38,6 @@ public class LoginSteps {
     public void user_on_products_page() {
         Assert.assertTrue(driver.getCurrentUrl().contains("inventory"),
                 "User is not on the products page after login.");
+        DriverFactory.quitDriver();
     }
-
-    // Additional Cucumber steps can go here for other login scenarios
 }
