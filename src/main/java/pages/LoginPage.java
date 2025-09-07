@@ -39,9 +39,8 @@ public class LoginPage {
 	}
 
 	public String getErrorMessage() {
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-		WebElement errorElement = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
-		return errorElement.getText();
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+		return wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage)).getText().trim();
 	}
 
 	public void login(String user, String pass) {
