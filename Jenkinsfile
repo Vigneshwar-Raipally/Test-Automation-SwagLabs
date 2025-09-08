@@ -10,22 +10,22 @@ pipeline {
 
         stage('Run TestNG Tests') {
             steps {
-                // Run TestNG suite (your testng.xml is at root)
+                // Run TestNG suite
                 bat 'mvn clean test -DsuiteXmlFile=testng.xml'
             }
         }
 
-        stage('Publish Reports') {
+        stage('Publish Extent Report') {
             steps {
                 script {
-                    // Publish Extent Report (HTML)
-                    publishHTML (target: [
+                    // Publish Extent HTML Report
+                    publishHTML(target: [
                         allowMissing: false,
                         alwaysLinkToLastBuild: true,
                         keepAll: true,
-                        reportDir: 'target/surefire-reports',
-                        reportFiles: 'index.html',
-                        reportName: 'TestNG HTML Report'
+                        reportDir: 'reports/extent-reports',
+                        reportFiles: 'ExecutionReport.html',
+                        reportName: 'Extent Execution Report'
                     ])
                 }
             }
@@ -34,7 +34,7 @@ pipeline {
 
     post {
         always {
-            // Archive screenshots (if generated)
+            // Archive screenshots
             archiveArtifacts artifacts: 'reports/screenshots/*', fingerprint: true
 
             // Collect TestNG/JUnit results
@@ -42,4 +42,3 @@ pipeline {
         }
     }
 }
-
