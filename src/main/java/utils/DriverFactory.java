@@ -4,7 +4,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.edge.EdgeOptions;
 
 public class DriverFactory {
 
@@ -15,7 +14,7 @@ public class DriverFactory {
 
     public static WebDriver getDriver() {
         if (driver == null) {
-            initDriver("chrome");  // default browser
+            initDriver("chrome");
         }
         return driver;
     }
@@ -23,45 +22,25 @@ public class DriverFactory {
     public static void initDriver(String browser) {
         if (driver != null) return;
 
-        boolean isJenkins = System.getenv("JENKINS_HOME") != null;
-
         switch (browser.toLowerCase()) {
             case "edge":
                 System.setProperty("webdriver.edge.driver", EDGE_DRIVER_PATH);
-                EdgeOptions edgeOptions = new EdgeOptions();
-                if (isJenkins) {
-                    edgeOptions.addArguments("--headless=new");
-                    edgeOptions.addArguments("--disable-gpu");
-                }
-                edgeOptions.addArguments("--remote-allow-origins=*");
-                driver = new EdgeDriver(edgeOptions);
+                driver = new EdgeDriver();
                 break;
 
             case "chrome":
             default:
                 System.setProperty("webdriver.chrome.driver", CHROME_DRIVER_PATH);
-                ChromeOptions chromeOptions = new ChromeOptions();
-
-                // Anti-detection + stability
-                chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
-                chromeOptions.setExperimentalOption("useAutomationExtension", false);
-                chromeOptions.addArguments("--disable-blink-features=AutomationControlled");
-
-                // 🚀 Run Chrome in Incognito mode (prevents password manager popup)
-                chromeOptions.addArguments("--incognito");
-
-                if (isJenkins) {
-                    chromeOptions.addArguments("--headless=new");
-                    chromeOptions.addArguments("--disable-gpu");
-                    chromeOptions.addArguments("--window-size=1920,1080");
-                }
-
-                chromeOptions.addArguments("--remote-allow-origins=*");
-                driver = new ChromeDriver(chromeOptions);
+                ChromeOptions options = new ChromeOptions();
+                // Anti-detection options for SauceDemo/login session stability:
+                options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+                options.setExperimentalOption("useAutomationExtension", false);
+                options.addArguments("--disable-blink-features=AutomationControlled");
+                driver = new ChromeDriver(options);
                 break;
         }
-
         driver.manage().window().maximize();
+        // Clear cookies after starting browser to ensure a fresh session
         driver.manage().deleteAllCookies();
     }
 
