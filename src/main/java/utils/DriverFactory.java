@@ -41,14 +41,21 @@ public class DriverFactory {
             default:
                 System.setProperty("webdriver.chrome.driver", CHROME_DRIVER_PATH);
                 ChromeOptions chromeOptions = new ChromeOptions();
+
                 // Anti-detection + stability
                 chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
                 chromeOptions.setExperimentalOption("useAutomationExtension", false);
                 chromeOptions.addArguments("--disable-blink-features=AutomationControlled");
+
+                // 🚀 Run Chrome in Incognito mode (prevents password manager popup)
+                chromeOptions.addArguments("--incognito");
+
                 if (isJenkins) {
                     chromeOptions.addArguments("--headless=new");
                     chromeOptions.addArguments("--disable-gpu");
+                    chromeOptions.addArguments("--window-size=1920,1080");
                 }
+
                 chromeOptions.addArguments("--remote-allow-origins=*");
                 driver = new ChromeDriver(chromeOptions);
                 break;
