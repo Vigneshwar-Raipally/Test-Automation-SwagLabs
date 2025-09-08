@@ -1,16 +1,17 @@
 pipeline {
     agent any
 
-    environment {
-        GIT_CREDENTIALS_ID = 'your-jenkins-git-credentials-id'  // Replace with Jenkins credentials ID
-        GIT_BRANCH = 'main'
-        GIT_REPO = 'https://github.com/Vigneshwar-Raipally/Test-Automation-SwagLabs.git'
+    triggers {
+        // This works if you configure GitHub webhook -> Jenkins
+        githubPush()
+        // OR if you prefer polling (every 5 minutes)
+        // pollSCM('H/5 * * * *')
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: "${GIT_BRANCH}", url: "${GIT_REPO}"
+                git branch: 'main', url: 'https://github.com/Vigneshwar-Raipally/Test-Automation-SwagLabs.git'
             }
         }
 
@@ -39,23 +40,6 @@ pipeline {
                     reportName: 'Extent Report',
                     keepAll: true
                 ])
-            }
-        }
-
-        stage('Push Reports Back to GitHub') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: "${GIT_CREDENTIALS_ID}", usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                    bat """
-                        git config user.email "jenkins@example.com"
-                        git config user.name "Jenkins CI"
-
-                        git pull origin ${GIT_BRANCH}
-
-                        git add reports/*
-                        git commit -m "Jenkins: Update reports [ci skip]" || echo "No changes to commit"
-                        git push https://${GIT_USER}:${GIT_PASS}@github.com/Vigneshwar-Raipally/Test-Automation-SwagLabs.git ${GIT_BRANCH}
-                    """
-                }
             }
         }
     }
