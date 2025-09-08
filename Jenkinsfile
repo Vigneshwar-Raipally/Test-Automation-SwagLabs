@@ -1,25 +1,31 @@
 pipeline {
     agent any
 
+    tools {
+        jdk 'JDK21'
+        maven 'Maven3'
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Vigneshwar-Raipally/Test-Automation-SwagLabs.git'
+                git branch: 'main',
+                    url: 'https://github.com/Vigneshwar-Raipally/Test-Automation-SwagLabs.git'
             }
         }
 
-        stage('Run TestNG Tests') {
+        stage('Build & Test') {
             steps {
                 // Run TestNG suite
                 bat 'mvn clean test -DsuiteXmlFile=testng.xml'
             }
-        }
-
-        stage('Publish Extent Report') {
-            steps {
-                script {
-                    // Publish Extent HTML Report
-                    publishHTML(target: [
+            post {
+                always {
+                    // Archive screenshots
+                    archiveArtifacts artifacts: 'reports/screenshots/*', fingerprint: true
+                    
+                    // Publish Extent report
+                    publishHTML([
                         allowMissing: false,
                         alwaysLinkToLastBuild: true,
                         keepAll: true,
@@ -27,18 +33,11 @@ pipeline {
                         reportFiles: 'ExecutionReport.html',
                         reportName: 'Extent Execution Report'
                     ])
+
+                    // Collect TestNG/JUnit results
+                    junit '**/target/surefire-reports/*.xml'
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            // Archive screenshots
-            archiveArtifacts artifacts: 'reports/screenshots/*', fingerprint: true
-
-            // Collect TestNG/JUnit results
-            junit '**/target/surefire-reports/*.xml'
         }
     }
 }
