@@ -4,54 +4,53 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Vigneshwar-Raipally/Test-Automation-SwagLabs.git'
+                git branch: 'main', url: 'https://github.com/Vigneshwar-Raipally/Test-Automation-SwagLabs.git'
             }
         }
 
         stage('Run Cucumber Tests') {
             steps {
-                // Run Cucumber scenarios (login feature)
-                sh 'mvn clean test -Dcucumber.options="--plugin pretty --plugin html:reports/cucumber-reports/cucumber-report.html"'
+                // Run your Cucumber runner
+                sh 'mvn clean test -Dcucumber.options="--plugin pretty" -DsuiteXmlFile=src/test/resources/testng.xml'
             }
         }
 
         stage('Run TestNG Tests') {
             steps {
-                // Run TestNG suite (Products, Cart, Checkout)
+                // Run your TestNG suite (root-level testng.xml)
                 sh 'mvn test -DsuiteXmlFile=testng.xml'
             }
         }
 
         stage('Publish Reports') {
             steps {
-                // Cucumber HTML report
-                publishHTML(target: [
-                    reportDir: 'reports/cucumber-reports',
-                    reportFiles: 'cucumber-report.html',
-                    reportName: 'Cucumber Report',
-                    keepAll: true
-                ])
+                script {
+                    // Publish Cucumber Report
+                    publishHTML(target: [
+                        reportDir: 'reports/cucumber-reports',
+                        reportFiles: 'cucumber-report.html',
+                        reportName: 'Cucumber Report',
+                        keepAll: true
+                    ])
 
-                // Extent HTML report
-                publishHTML(target: [
-                    reportDir: 'reports/extent-reports',
-                    reportFiles: 'index.html',
-                    reportName: 'Extent Report',
-                    keepAll: true
-                ])
-
-                // TestNG results (requires TestNG plugin in Jenkins)
-                publishTestNGResults testNGPattern: '**/test-output/testng-results.xml'
+                    // Publish Extent Report
+                    publishHTML(target: [
+                        reportDir: 'reports/extent-reports',
+                        reportFiles: 'index.html',
+                        reportName: 'Extent Report',
+                        keepAll: true
+                    ])
+                }
             }
         }
     }
 
     post {
         always {
-            // Archive screenshots captured during failures
+            // Archive screenshots
             archiveArtifacts artifacts: 'reports/screenshots/*', fingerprint: true
 
-            // JUnit fallback (Surefire reports for Jenkins trends)
+            // Capture TestNG/JUnit XML results
             junit '**/target/surefire-reports/*.xml'
         }
     }
