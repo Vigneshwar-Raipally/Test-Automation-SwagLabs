@@ -4,35 +4,42 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/Vigneshwar-Raipally/Test-Automation-SwagLabs.git'
+                git 'https://github.com/Vigneshwar-Raipally/Test-Automation-SwagLabs.git'
             }
         }
 
         stage('Build & Test') {
             steps {
-                // Run TestNG suite
-                bat 'mvn clean test -DsuiteXmlFile=testng.xml'
+                sh 'mvn clean test -DsuiteXmlFile=src/test/resources/testng.xml'
             }
-            post {
-                always {
-                    // Archive screenshots
-                    archiveArtifacts artifacts: 'reports/screenshots/*', fingerprint: true
-                    
-                    // Publish Extent report
-                    publishHTML([
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'reports/extent-reports',
-                        reportFiles: 'ExecutionReport.html',
-                        reportName: 'Extent Execution Report'
-                    ])
+        }
 
-                    // Collect TestNG/JUnit results
-                    junit '**/target/surefire-reports/*.xml'
-                }
+        stage('Publish Cucumber Report') {
+            steps {
+                publishHTML(target: [
+                    reportDir: 'reports/cucumber-reports',
+                    reportFiles: 'cucumber-report.html',
+                    reportName: 'Cucumber Report',
+                    keepAll: true
+                ])
             }
+        }
+
+        stage('Publish Extent Report') {
+            steps {
+                publishHTML(target: [
+                    reportDir: 'reports/extent-reports',
+                    reportFiles: 'index.html',
+                    reportName: 'Extent Report',
+                    keepAll: true
+                ])
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'reports/screenshots/*', fingerprint: true
         }
     }
 }
