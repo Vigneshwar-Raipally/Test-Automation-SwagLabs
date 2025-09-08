@@ -32,7 +32,7 @@ public class CheckoutTest {
 
     @BeforeClass
     public void setUp() {
-        DriverFactory.setBrowser("edge");
+        DriverFactory.setBrowser("chrome");
         driver = DriverFactory.getDriver();
         driver.manage().deleteAllCookies();
         driver.get("https://www.saucedemo.com/");
@@ -67,7 +67,6 @@ public class CheckoutTest {
         try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
     }
 
-    // Helper to start from products, login, add item
     private void prepareForCheckout() {
         if (!driver.getCurrentUrl().contains("inventory")) {
             driver.get("https://www.saucedemo.com/");
@@ -84,7 +83,7 @@ public class CheckoutTest {
     public void testCompleteCheckoutWithValidData() {
         prepareForCheckout();
         test.log(Status.INFO, "Complete checkout with valid data");
-        checkoutPage.enterCheckoutInfo("John", "Doe", "12345");
+        checkoutPage.enterCheckoutInfo("Vigneshwar", "Raipally", "12345");
         checkoutPage.clickContinue();
         checkoutPage.finishCheckout();
         Assert.assertTrue(checkoutPage.isOrderComplete(), "Order confirmation should be visible after valid checkout");
@@ -94,7 +93,7 @@ public class CheckoutTest {
     public void testCompleteCheckoutWithValidDataRepeat() {
         prepareForCheckout();
         test.log(Status.INFO, "Repeat: Complete checkout with valid data (different user)");
-        checkoutPage.enterCheckoutInfo("Jane", "Smith", "67890");
+        checkoutPage.enterCheckoutInfo("Datta", "Sai", "67890");
         checkoutPage.clickContinue();
         checkoutPage.finishCheckout();
         Assert.assertTrue(checkoutPage.isOrderComplete(), "Order confirmation should be visible after valid checkout");
@@ -115,7 +114,7 @@ public class CheckoutTest {
     public void testCheckoutWithInvalidPostalCode() {
         prepareForCheckout();
         test.log(Status.INFO, "Checkout with invalid postal code");
-        checkoutPage.enterCheckoutInfo("Tom", "Jerry", "@@@##");
+        checkoutPage.enterCheckoutInfo("Vignesh", "War", "@@@##");
         checkoutPage.clickContinue();
         // SauceDemo allows this! Verify navigation to next step instead of error.
         Assert.assertTrue(driver.getCurrentUrl().contains("checkout-step-two"),
@@ -130,7 +129,7 @@ public class CheckoutTest {
         Assert.assertTrue(driver.getCurrentUrl().contains("cart"), "Cancel Step One should return to cart");
 
         cartPage.clickCheckout();
-        checkoutPage.enterCheckoutInfo("Ron", "Weasley", "11223");
+        checkoutPage.enterCheckoutInfo("Harry", "Potter", "11223");
         checkoutPage.clickContinue();
         test.log(Status.INFO, "Cancel checkout at Step Two");
         checkoutPage.clickCancelStepTwo();
