@@ -13,3 +13,4 @@ Feature: SauceDemo Login and Cross-Browser Testing
     Examples:
       | browser |
       | chrome  |
+      | edge    |
