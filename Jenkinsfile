@@ -15,34 +15,25 @@ pipeline {
             }
         }
 
-        stage('Publish Cucumber Report') {
+        stage('Archive Cucumber Report') {
             steps {
-                publishHTML(target: [
-                    reportDir: 'reports/cucumber-reports',
-                    reportFiles: 'cucumber-report.html',
-                    reportName: 'Cucumber Report',
-                    keepAll: true
-                ])
+                // Instead of publishHTML, just archive the report
+                archiveArtifacts artifacts: 'reports/cucumber-reports/cucumber-report.html', allowEmptyArchive: true
             }
         }
 
-        stage('Publish Extent Report') {
+        stage('Archive Extent Report') {
             steps {
-                publishHTML(target: [
-                    reportDir: 'reports/extent-reports',
-                    reportFiles: 'index.html',
-                    reportName: 'Extent Report',
-                    keepAll: true
-                ])
+                // Archive Extent report similarly
+                archiveArtifacts artifacts: 'reports/extent-reports/index.html', allowEmptyArchive: true
             }
         }
     }
 
     post {
         always {
-            archiveArtifacts artifacts: 'reports/screenshots/*', fingerprint: true
+            // Archive screenshots
+            archiveArtifacts artifacts: 'reports/screenshots/*', fingerprint: true, allowEmptyArchive: true
         }
     }
 }
-
-
