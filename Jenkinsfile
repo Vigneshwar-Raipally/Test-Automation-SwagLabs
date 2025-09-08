@@ -2,10 +2,8 @@ pipeline {
     agent any
 
     triggers {
-        // This works if you configure GitHub webhook -> Jenkins
-        githubPush()
-        // OR if you prefer polling (every 5 minutes)
-        // pollSCM('H/5 * * * *')
+        githubPush()   // build starts automatically on GitHub push
+        // or use pollSCM('H/5 * * * *') if no webhook
     }
 
     stages {
