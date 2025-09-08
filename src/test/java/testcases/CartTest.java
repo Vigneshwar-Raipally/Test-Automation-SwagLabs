@@ -36,7 +36,7 @@ public class CartTest {
 
     @BeforeClass
     public void setUp() {
-        DriverFactory.setBrowser("edge");
+        DriverFactory.setBrowser("chrome");
         driver = DriverFactory.getDriver();
         driver.manage().deleteAllCookies();
         driver.get("https://www.saucedemo.com/");
@@ -185,3 +185,4 @@ public class CartTest {
         DriverFactory.quitDriver();
     }
 }
+
