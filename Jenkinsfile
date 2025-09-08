@@ -4,13 +4,13 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Vigneshwar-Raipally/Test-Automation-SwagLabs.git'
-            }
+        		git branch: 'main', url: 'https://github.com/Vigneshwar-Raipally/Test-Automation-SwagLabs.git'
+    		}
         }
 
         stage('Build & Test') {
             steps {
-                sh 'mvn clean test -DsuiteXmlFile=src/test/resources/testng.xml'
+                bat 'mvn clean test -DsuiteXmlFile=src/test/resources/testng.xml'
             }
         }
 
