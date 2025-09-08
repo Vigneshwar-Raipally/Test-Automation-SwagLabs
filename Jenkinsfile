@@ -4,7 +4,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Vigneshwar-Raipally/Test-Automation-SwagLabs.git'
+                git branch: 'main',
+                    url: 'https://github.com/Vigneshwar-Raipally/Test-Automation-SwagLabs.git'
             }
         }
 
@@ -43,3 +44,4 @@ pipeline {
         }
     }
 }
+
