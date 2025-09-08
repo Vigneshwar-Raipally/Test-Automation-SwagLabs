@@ -8,32 +8,17 @@ pipeline {
             }
         }
 
-        stage('Run Cucumber Tests') {
-            steps {
-                // Run cucumber tests (adjust your runner class if needed)
-                bat 'mvn clean test -Dcucumber.options="--plugin pretty"'
-            }
-        }
-
         stage('Run TestNG Tests') {
             steps {
-                // Run your TestNG suite (root-level testng.xml)
-                bat 'mvn test -DsuiteXmlFile=testng.xml'
+                // Run TestNG suite (your testng.xml is at root)
+                bat 'mvn clean test -DsuiteXmlFile=testng.xml'
             }
         }
 
         stage('Publish Reports') {
             steps {
                 script {
-                    // Publish Cucumber Report
-                    publishHTML(target: [
-                        reportDir: 'reports/cucumber-reports',
-                        reportFiles: 'cucumber-report.html',
-                        reportName: 'Cucumber Report',
-                        keepAll: true
-                    ])
-
-                    // Publish Extent Report
+                    // Publish Extent Report (HTML)
                     publishHTML(target: [
                         reportDir: 'reports/extent-reports',
                         reportFiles: 'index.html',
@@ -47,10 +32,10 @@ pipeline {
 
     post {
         always {
-            // Archive screenshots
+            // Archive screenshots (if generated)
             archiveArtifacts artifacts: 'reports/screenshots/*', fingerprint: true
 
-            // Capture TestNG/JUnit XML results
+            // Collect TestNG/JUnit results
             junit '**/target/surefire-reports/*.xml'
         }
     }
