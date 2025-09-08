@@ -4,6 +4,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 
 public class DriverFactory {
 
@@ -14,7 +15,7 @@ public class DriverFactory {
 
     public static WebDriver getDriver() {
         if (driver == null) {
-            initDriver("chrome"); // default
+            initDriver("chrome");  // default browser
         }
         return driver;
     }
@@ -22,25 +23,38 @@ public class DriverFactory {
     public static void initDriver(String browser) {
         if (driver != null) return;
 
+        boolean isJenkins = System.getenv("JENKINS_HOME") != null;
+
         switch (browser.toLowerCase()) {
             case "edge":
                 System.setProperty("webdriver.edge.driver", EDGE_DRIVER_PATH);
-                driver = new EdgeDriver();
+                EdgeOptions edgeOptions = new EdgeOptions();
+                if (isJenkins) {
+                    edgeOptions.addArguments("--headless=new");
+                    edgeOptions.addArguments("--disable-gpu");
+                }
+                edgeOptions.addArguments("--remote-allow-origins=*");
+                driver = new EdgeDriver(edgeOptions);
                 break;
 
             case "chrome":
             default:
                 System.setProperty("webdriver.chrome.driver", CHROME_DRIVER_PATH);
-                ChromeOptions options = new ChromeOptions();
-                // Recommended anti-detection options for SauceDemo/login session stability:
-                options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
-                options.setExperimentalOption("useAutomationExtension", false);
-                options.addArguments("--disable-blink-features=AutomationControlled");
-                driver = new ChromeDriver(options);
+                ChromeOptions chromeOptions = new ChromeOptions();
+                // Anti-detection + stability
+                chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+                chromeOptions.setExperimentalOption("useAutomationExtension", false);
+                chromeOptions.addArguments("--disable-blink-features=AutomationControlled");
+                if (isJenkins) {
+                    chromeOptions.addArguments("--headless=new");
+                    chromeOptions.addArguments("--disable-gpu");
+                }
+                chromeOptions.addArguments("--remote-allow-origins=*");
+                driver = new ChromeDriver(chromeOptions);
                 break;
         }
+
         driver.manage().window().maximize();
-        // Clear cookies after starting browser to ensure a fresh session
         driver.manage().deleteAllCookies();
     }
 
@@ -55,7 +69,7 @@ public class DriverFactory {
 
     public static void quitDriver() {
         if (driver != null) {
-            driver.quit(); // uncomment to actually quit browser
+            driver.quit();
             driver = null;
         }
     }
