@@ -10,15 +10,15 @@ pipeline {
 
         stage('Run Cucumber Tests') {
             steps {
-                // Run your Cucumber runner
-                sh 'mvn clean test -Dcucumber.options="--plugin pretty" -DsuiteXmlFile=src/test/resources/testng.xml'
+                // Run cucumber tests (adjust your runner class if needed)
+                bat 'mvn clean test -Dcucumber.options="--plugin pretty"'
             }
         }
 
         stage('Run TestNG Tests') {
             steps {
                 // Run your TestNG suite (root-level testng.xml)
-                sh 'mvn test -DsuiteXmlFile=testng.xml'
+                bat 'mvn test -DsuiteXmlFile=testng.xml'
             }
         }
 
