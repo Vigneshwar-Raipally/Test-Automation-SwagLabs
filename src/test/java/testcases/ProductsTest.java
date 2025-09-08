@@ -31,7 +31,7 @@ public class ProductsTest {
 
     @BeforeClass
     public void setUp() {
-        DriverFactory.setBrowser("edge"); // Or "chrome"
+        DriverFactory.setBrowser("chrome");
         driver = DriverFactory.getDriver();
         driver.manage().deleteAllCookies();
         driver.get("https://www.saucedemo.com/");
@@ -193,3 +193,4 @@ public class ProductsTest {
         return prices;
     }
 }
+
