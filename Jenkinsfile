@@ -19,11 +19,13 @@ pipeline {
             steps {
                 script {
                     // Publish Extent Report (HTML)
-                    publishHTML(target: [
-                        reportDir: 'reports/extent-reports',
+                    publishHTML (target: [
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'target/surefire-reports',
                         reportFiles: 'index.html',
-                        reportName: 'Extent Report',
-                        keepAll: true
+                        reportName: 'TestNG HTML Report'
                     ])
                 }
             }
@@ -40,3 +42,4 @@ pipeline {
         }
     }
 }
+
